@@ -1,0 +1,9 @@
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - bufferutil
+  - esbuild
+  - node-datachannel
+  - protobufjs
+  - utf-8-validate
