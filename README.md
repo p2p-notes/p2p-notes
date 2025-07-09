@@ -1,10 +1,4 @@
-# Matrix Notebook
-
-## a project to use matrix as realtime scalable E2E encrypted content mangement system
-https://github.com/user-attachments/assets/d0b1d140-cb36-4f14-ac90-3b6a4ad08578
-
-
-Try it out at https://matrix-notebook.pages.dev
+# P2P Notes
 
 # Planned Features
 
