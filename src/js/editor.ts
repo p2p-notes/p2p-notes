@@ -23,36 +23,7 @@ import {
   TreeID,
 } from "loro-crdt";
 
-import * as sdk from "matrix-js-sdk";
 const ROOT_DOC_KEY = "0@14167320934836008919";
-let matrixClient: sdk.MatrixClient;
-
-import { AutoDiscovery } from "matrix-js-sdk";
-import {
-  isLivekitFocusConfig,
-  LivekitFocus,
-} from "matrix-js-sdk/src/matrixrtc/LivekitFocus";
-import {
-  MatrixRTCSession,
-  MatrixRTCSessionEvent,
-} from "matrix-js-sdk/src/matrixrtc/MatrixRTCSession";
-
-const FOCI_WK_KEY = "org.matrix.msc4143.rtc_foci";
-
-import { MatrixClient, type IOpenIDToken } from "matrix-js-sdk/src/matrix";
-import { logger } from "matrix-js-sdk/src/logger";
-
-import { Room, RoomEvent } from "livekit-client";
-import { sleep } from "matrix-js-sdk/src/utils";
-
-export interface SFUConfig {
-  url: string;
-  jwt: string;
-}
-export type OpenIDClientParts = Pick<
-  MatrixClient,
-  "getOpenIdToken" | "getDeviceId"
->;
 
 function getRandomAnimalName() {
   const animals = [
@@ -139,102 +110,6 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export async function makePreferredLivekitFoci(
-  rtcSession: MatrixRTCSession,
-  livekitAlias: string,
-  matrix_client: MatrixClient
-): Promise<LivekitFocus[]> {
-  console.log("Start building foci_preferred list: ", rtcSession.room.roomId);
-
-  const preferredFoci: LivekitFocus[] = [];
-
-  // Prioritize the .well-known/matrix/client, if available, over the configured SFU
-  const domain = matrix_client.getDomain();
-  if (domain) {
-    // we use AutoDiscovery instead of relying on the MatrixClient having already
-    // been fully configured and started
-    const wellKnownFoci = (await AutoDiscovery.getRawClientConfig(domain))?.[
-      FOCI_WK_KEY
-    ];
-    if (Array.isArray(wellKnownFoci)) {
-      preferredFoci.push(
-        ...wellKnownFoci
-          .filter((f) => !!f)
-          .filter(isLivekitFocusConfig)
-          .map((wellKnownFocus) => {
-            console.log(
-              "Adding livekit focus from well known: ",
-              wellKnownFocus
-            );
-            return { ...wellKnownFocus, livekit_alias: livekitAlias };
-          })
-      );
-    }
-  }
-  return preferredFoci;
-}
-async function getLiveKitJWT(
-  client: OpenIDClientParts,
-  livekitServiceURL: string,
-  roomName: string,
-  openIDToken: IOpenIDToken
-): Promise<SFUConfig> {
-  try {
-    const res = await fetch(livekitServiceURL + "/sfu/get", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        room: roomName,
-        openid_token: openIDToken,
-        device_id: client.getDeviceId(),
-      }),
-    });
-    if (!res.ok) {
-      throw new Error("SFU Config fetch failed with status code " + res.status);
-    }
-    const sfuConfig = await res.json();
-    console.log(
-      "MatrixRTCExample: get SFU config: \nurl:",
-      sfuConfig.url,
-      "\njwt",
-      sfuConfig.jwt
-    );
-    return sfuConfig;
-  } catch (e) {
-    throw new Error("SFU Config fetch failed with exception " + e);
-  }
-}
-
-export async function getSFUConfigWithOpenID(
-  client: OpenIDClientParts,
-  activeFocus: LivekitFocus
-): Promise<SFUConfig | undefined> {
-  const openIdToken = await client.getOpenIdToken();
-  logger.debug("Got openID token", openIdToken);
-
-  try {
-    logger.info(
-      `Trying to get JWT from call's active focus URL of ${activeFocus.livekit_service_url}...`
-    );
-    const sfuConfig = await getLiveKitJWT(
-      client,
-      activeFocus.livekit_service_url,
-      activeFocus.livekit_alias,
-      openIdToken
-    );
-    logger.info(`Got JWT from call's active focus URL.`);
-
-    return sfuConfig;
-  } catch (e) {
-    logger.warn(
-      `Failed to get JWT from RTC session's active focus URL of ${activeFocus.livekit_service_url}.`,
-      e
-    );
-    return undefined;
-  }
-}
 //@ts-ignore
 import { Ok, Error } from "../gleam.mjs";
 
@@ -244,29 +119,29 @@ export function save_document() {
 }
 
 export async function save_function(room_id: string, doc: LoroDoc) {
-  let files = await get_all_update_files();
+  // let files = await get_all_update_files();
 
-  let array_files = files?.map((updateString) => {
-    if (updateString) {
-      const binaryString = atob(updateString);
-      const snapshot = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        snapshot[i] = binaryString.charCodeAt(i);
-      }
+  // let array_files = files?.map((updateString) => {
+  //   if (updateString) {
+  //     const binaryString = atob(updateString);
+  //     const snapshot = new Uint8Array(binaryString.length);
+  //     for (let i = 0; i < binaryString.length; i++) {
+  //       snapshot[i] = binaryString.charCodeAt(i);
+  //     }
 
-      return [...snapshot];
-    }
-  });
-  if (array_files) {
-    console.log(array_files);
-    //@ts-ignore
-    doc.importBatch(array_files);
-  }
+  //     return [...snapshot];
+  //   }
+  // });
+  // if (array_files) {
+  //   console.log(array_files);
+  //   //@ts-ignore
+  //   doc.importBatch(array_files);
+  // }
 
   const snapshot = doc.export({ mode: "snapshot" });
   await save_loro_doc(room_id, snapshot);
 
-  sync_to_repo(snapshot);
+  // sync_to_repo(snapshot);
 
   const messageEvent = new CustomEvent("state_saved");
   document.dispatchEvent(messageEvent);
@@ -295,11 +170,14 @@ export function download_notebook(doc: LoroDoc) {
   URL.revokeObjectURL(url);
 }
 //@ts-ignore
-import { render_editor } from "./main.jsx";
 import { joinRoom } from "trystero";
 import { Octokit } from "octokit";
-
+import DragHandle from "@tiptap/extension-drag-handle";
+import StarterKit from "@tiptap/starter-kit";
+import { Placeholder } from "@tiptap/extensions";
+import TableOfContents from "@tiptap/extension-table-of-contents";
 export async function init_tiptap(doc: LoroDoc) {
+  let editor: Editor | undefined;
   let room_id = "noter";
   const config = { appId: "sakwdakwdakowdapkwdpkwdkemonas" };
   const room = joinRoom(config, "errgaeaerrgf");
@@ -308,79 +186,85 @@ export async function init_tiptap(doc: LoroDoc) {
 
   const mainApp = document.querySelector("#main-app");
 
-  let selected_document;
-
-  // // let awareness;
-  // let tiptapEditor: Editor | undefined;
-  let livekitRoom: Room;
+  let selected_document = localStorage.getItem("last-selected-note" + room_id);
   let tiptapEditor;
-  let blocknoteEditor: BlockNoteEditor | undefined;
   document.addEventListener("save_doc", () => {
     save_function(room_id, doc);
   });
+  let render_editor = () => {
+    let container = doc.getMap(selected_document!);
+    const LoroPlugins = Extension.create({
+      name: "loro-plugins",
+      addProseMirrorPlugins() {
+        return [
+          LoroSyncPlugin({
+            //@ts-ignore
+            doc,
+            containerId: container.id,
+          }),
+          LoroUndoPlugin({ doc }),
+          LoroCursorPlugin(awareness, {
+            user: {
+              name: getRandomAnimalName(),
+              color: getRandomColor(),
+            },
+          }),
+          keymap({ "Mod-z": undo, "Mod-y": redo, "Mod-Shift-z": redo }),
+        ];
+      },
+    });
+
+    editor = new Editor({
+      extensions: [
+        LoroPlugins,
+        TableOfContents,
+        // DragHandle,
+        Placeholder.configure({
+          placeholder: ({ node }) => {
+            if (node.type.name === "heading") {
+              return "What’s the title?";
+            }
+            return "Write Something...";
+          },
+        }),
+        StarterKit.configure({
+          undoRedo: false, // Disable built-in undo/redo since we're using collaboration
+        }),
+      ],
+
+      onCreate(props) {
+        props.editor?.setEditable(true);
+      },
+      element: document.querySelector(".editor")!,
+      editable: false,
+    });
+  };
   document.addEventListener("user-selected-note", (e) => {
-    if (tiptapEditor) {
-      tiptapEditor.destroy();
+    //@ts-ignore
+    localStorage.setItem("last-selected-note" + room_id, e.detail);
+    if (editor) {
+      editor.destroy();
 
       //@ts-ignore
       selected_document = e.detail;
-      let container = doc.getMap(selected_document);
-      const LoroPlugins = Extension.create({
-        name: "loro-plugins",
-        addProseMirrorPlugins() {
-          return [
-            LoroSyncPlugin({
-              //@ts-ignore
-              doc,
-              containerId: container.id,
-            }),
-            LoroUndoPlugin({ doc }),
-            LoroCursorPlugin(awareness, {
-              user: {
-                name: getRandomAnimalName(),
-                color: getRandomColor(),
-              },
-            }),
-            keymap({ "Mod-z": undo, "Mod-y": redo, "Mod-Shift-z": redo }),
-          ];
-        },
-      });
 
-      render_editor(LoroPlugins, (tiptapEditor, blocknoteEditor) => {
-        tiptapEditor = tiptapEditor;
-        blocknoteEditor = blocknoteEditor;
-      });
+      render_editor();
     } else {
       //@ts-ignore
       selected_document = e.detail;
-      let container = doc.getMap(selected_document);
-      const LoroPlugins = Extension.create({
-        name: "loro-plugins",
-        addProseMirrorPlugins() {
-          return [
-            LoroSyncPlugin({
-              //@ts-ignore
-              doc,
-              containerId: container.id,
-            }),
-            LoroUndoPlugin({ doc }),
-            LoroCursorPlugin(awareness, {
-              user: {
-                name: getRandomAnimalName(),
-                color: getRandomColor(),
-              },
-            }),
-            keymap({ "Mod-z": undo, "Mod-y": redo, "Mod-Shift-z": redo }),
-          ];
-        },
-      });
 
-      render_editor(LoroPlugins, (tiptapEditor, blocknoteEditor) => {
-        tiptapEditor = tiptapEditor;
-        blocknoteEditor = blocknoteEditor;
-      });
+      render_editor();
     }
   });
+
+  if (selected_document) {
+    if (editor) {
+      editor.destroy();
+      render_editor();
+    } else {
+      render_editor();
+    }
+  }
 
   const [sendUpdate, getUpdate] = room.makeAction("update");
   const [sendAwareness, getAwareness] = room.makeAction("awareness");
@@ -660,8 +544,7 @@ import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { Extension } from "@tiptap/core";
-import { BlockNoteEditor } from "@blocknote/core";
+import { Editor, Extension } from "@tiptap/core";
 
 export function make_draggable(folders_and_items: [HTMLElement]) {
   folders_and_items.forEach((element) => {
@@ -742,10 +625,8 @@ class AutoSaver {
 
   async conditionalSave() {
     if (this.hasChanges === true) {
-      // debounce(
       save_function(this.room_id, this.doc);
-      // ,
-      // )
+
       this.hasChanges = false;
     }
   }
@@ -755,18 +636,6 @@ class AutoSaver {
       await this.conditionalSave();
     }, this.intervalSeconds * 1000);
   }
-}
-
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
 }
 
 export async function get_tree(doc: LoroDoc, room_id: string, on_tree) {

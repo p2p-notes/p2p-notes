@@ -32,11 +32,11 @@ grille-pain {
   --grille_pain-Success-progress-bar: #ffffffb3; /* Progress bar color */
 }
 * {
-  --bn-colors-editor-background: #02151d;
+  --bn-colors-editor-background: rgb(26 26 46);
 }
 html,
 body {
-  background-color: #02151d;
+  background-color: rgb(26 26 46);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
   line-height: 1.6;
@@ -70,7 +70,7 @@ body {
 }
 
 .tree-item:hover {
-  background-color: #042a3a;
+  background-color: rgb(61, 61, 142);
   transform: translateX(2px);
 }
 
@@ -198,7 +198,7 @@ body {
 }
 
 .edit-button:hover {
-  background-color: #02151d;
+  background-color: rgb(26 26 46);
   color: white;
   transform: scale(1.1);
   box-shadow: 0 2px 4px rgba(255, 82, 82, 0.3);
@@ -353,9 +353,8 @@ body {
   pointer-events: none;
 }
 
-/* Placeholder (on every new line) */
-p.is-editor-empty:first-child::before {
-  color: var(--gray-4);
+.tiptap p.is-editor-empty:first-child::before {
+  color: #79b8f6;
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -378,7 +377,30 @@ p.is-editor-empty:first-child::before {
   padding-right: 2px;
   white-space: nowrap;
 }
+.tiptap {
+  position: fixed;
+  top: 3rem;
+  margin: 30px;
+}
+.ProseMirror {
+  padding-inline: 2rem;
 
+  > * + * {
+    margin-top: 0.75em;
+  }
+}
+#tooltip {
+  width: max-content;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #222;
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 90%;
+}
 /* Dark Scrollbar Styles */
 
 /* For Webkit browsers (Chrome, Safari, Edge) */
@@ -388,7 +410,7 @@ p.is-editor-empty:first-child::before {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: rgb(26 26 46);
   border-radius: 4px;
 }
 
@@ -407,13 +429,13 @@ p.is-editor-empty:first-child::before {
 }
 
 ::-webkit-scrollbar-corner {
-  background: #1e293b;
+  background: rgb(26 26 46);
 }
 
 /* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #64748b #1e293b;
+  scrollbar-color: #64748b rgb(26 26 46);
 }
 
 /* Alternative wider scrollbar variant */
@@ -444,7 +466,7 @@ p.is-editor-empty:first-child::before {
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: rgb(26 26 46);
   border-radius: 3px;
 }
 
@@ -478,7 +500,7 @@ p.is-editor-empty:first-child::before {
 }
 
 .scrollbar-blue {
-  scrollbar-color: #3b82f6 #1e293b;
+  scrollbar-color: #3b82f6 rgb(26 26 46);
 }
 
 .scrollbar-green::-webkit-scrollbar-thumb {
@@ -491,7 +513,7 @@ p.is-editor-empty:first-child::before {
 }
 
 .scrollbar-green {
-  scrollbar-color: #22c55e #1e293b;
+  scrollbar-color: #22c55e rgb(26 26 46);
 }
 
 .scrollbar-red::-webkit-scrollbar-thumb {
@@ -504,7 +526,7 @@ p.is-editor-empty:first-child::before {
 }
 
 .scrollbar-red {
-  scrollbar-color: #ef4444 #1e293b;
+  scrollbar-color: #ef4444 rgb(26 26 46);
 }
 
 /* Overlay scrollbar (appears only on hover) */
@@ -579,7 +601,7 @@ p.is-editor-empty:first-child::before {
 /* For better compatibility across browsers */
 html {
   scrollbar-width: thin;
-  scrollbar-color: #64748b #1e293b;
+  scrollbar-color: #64748b rgb(26 26 46);
 }
 
 /* Dark theme for form elements with custom scrollbars */

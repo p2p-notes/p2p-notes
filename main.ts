@@ -14,7 +14,7 @@ channel.postMessage("ping");
 setTimeout(() => {
   if (!isDuplicate) {
     //@ts-ignore
-    import("./src/matrix_notebook.gleam").then(({ main }) => {
+    import("./src/p2p_notes.gleam").then(({ main }) => {
       main({});
     });
   } else {

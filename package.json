@@ -7,34 +7,21 @@
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.4",
-    "@blocknote/code-block": "^0.33.0",
-    "@blocknote/core": "^0.33.0",
-    "@blocknote/mantine": "^0.33.0",
-    "@blocknote/react": "^0.33.0",
-    "@matrix-org/matrix-sdk-crypto-wasm": "^14.2.1",
-    "@tailwindcss/vite": "^4.1.11",
-    "@tiptap/core": "^2.24.2",
-    "@tiptap/extension-placeholder": "^2.25.0",
-    "@tiptap/pm": "^2.24.2",
-    "@tiptap/starter-kit": "^2.25.0",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@tiptap/core": "3.0.0-beta.26",
+    "@tiptap/extension-drag-handle": "3.0.0-beta.26",
+    "@tiptap/extension-table-of-contents": "3.0.0-beta.26",
+    "@tiptap/extensions": "3.0.0-beta.26",
+    "@tiptap/pm": "3.0.0-beta.26",
+    "@tiptap/starter-kit": "3.0.0-beta.26",
     "dexie": "^4.0.11",
-    "events": "^3.3.0",
-    "livekit-client": "^2.15.2",
     "loro-crdt": "^1.5.9",
     "loro-prosemirror": "^0.2.3",
-    "matrix-js-sdk": "^37.10.0",
     "octokit": "^5.0.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "trystero": "^0.21.6",
     "vite": "^6.3.5",
     "vite-gleam": "^0.4.3",
     "vite-plugin-top-level-await": "^1.5.0",
-    "vite-plugin-wasm": "^3.4.1"
+    "vite-plugin-wasm": "^3.5.0"
   },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184",
-  "devDependencies": {
-    "@types/react-dom": "^19.1.6"
-  }
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }

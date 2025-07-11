@@ -45,31 +45,29 @@ pub fn main() {
         loading: False,
         notebook: None,
         notebooks: [
-          LocalNoteBook(
-            name: "test repo",
-            password: "wjdaiwwdaoiwda",
-            room: "iasjowgjdiw",
-          ),
-          GithubNoteBook(
-            name: "test repo",
-            owner: "kemo-1",
-            repo: "test_repo",
-            branch: "p2p-notebook",
-            password: "wjdaiwwdaoiwda",
-            room: "jiadwjkwda",
-          ),
-          LocalNoteBook(
+          NoteBook(
             name: "test repo",
             password: "wjdaiwwdaoiwda",
             room: "iasjjkadijdiw",
+            publish_url: Some("url"),
           ),
-          GithubNoteBook(
+          NoteBook(
             name: "test repo",
-            owner: "kemo-1",
-            repo: "test_repo",
-            branch: "p2p-notebook",
-            room: "kowdakkjhopadopaw",
             password: "wjdaiwwdaoiwda",
+            room: "sadsdgdfgdgf",
+            publish_url: None,
+          ),
+          NoteBook(
+            name: "test repo",
+            password: "wjdaiwwdaoiwda",
+            room: "dfsdfsdfsdfs",
+            publish_url: Some("url"),
+          ),
+          NoteBook(
+            name: "test repo",
+            password: "wjdaiwwdaoiwda",
+            room: "iasjjkadidfsdsfjdiw",
+            publish_url: Some("url"),
           ),
         ],
         peers: [],
@@ -111,7 +109,7 @@ type Model {
 }
 
 fn init(model: Model) -> #(Model, Effect(Msg)) {
-  #(model, effect.none())
+  #(model, init_tiptap())
 }
 
 pub opaque type Msg {
@@ -347,7 +345,7 @@ fn view(model: Model, stylesheet) -> Element(Msg) {
   use <- sketch_lustre.render(stylesheet:, in: [sketch_lustre.node()])
 
   case model.notebook {
-    None -> {
+    Some(_) -> {
       [
         case model.add_notebook_menu {
           True -> add_notebook_menu(model)
@@ -357,8 +355,8 @@ fn view(model: Model, stylesheet) -> Element(Msg) {
       ]
       |> element.fragment
     }
-    Some(_) -> {
-      html.span(class([]), [], [notebook_editor_view(model)])
+    None -> {
+      notebook_editor_view(model)
     }
   }
 }
@@ -431,10 +429,10 @@ fn add_notebook_menu(model: Model) {
     [
       html.div(
         class([
-          css.background("linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"),
+          css.background(" rgb(26 26 46) "),
           css.border_radius(length.px(16)),
           css.padding(length.px(32)),
-          css.border("1px solid rgba(255, 255, 255, 0.1)"),
+          css.border("1px solid rgb(61, 61, 142)"),
           css.box_shadow(
             "0 20px 60px rgba(0, 0, 0, 0.7), 0 8px 32px rgba(0, 0, 0, 0.5)",
           ),
@@ -453,7 +451,7 @@ fn add_notebook_menu(model: Model) {
               css.align_items("center"),
               css.margin_bottom(length.px(24)),
               css.padding_bottom(length.px(16)),
-              css.border_bottom("2px solid rgba(255, 255, 255, 0.1)"),
+              css.border("2px solid rgb(61, 61, 142)"),
             ]),
             [],
             [
@@ -528,7 +526,7 @@ fn add_notebook_menu(model: Model) {
                       css.padding(length.px(16)),
                       css.background_color("rgba(59, 130, 246, 0.05)"),
                       css.border_radius(length.px(12)),
-                      css.border("1px solid rgba(59, 130, 246, 0.2)"),
+                      css.border("1px solid rgb(61, 61, 142)"),
                     ]),
                     [],
                     [
@@ -563,7 +561,7 @@ fn add_notebook_menu(model: Model) {
               css.justify_content("flex-end"),
               css.margin_top(length.px(24)),
               css.padding_top(length.px(20)),
-              css.border_top("1px solid rgba(255, 255, 255, 0.1)"),
+              css.border("1px solid rgb(61, 61, 142)"),
             ]),
             [],
             [
@@ -610,7 +608,7 @@ fn form_field(
         class([
           css.padding(length.px(14)),
           css.border_radius(length.px(12)),
-          css.border("2px solid #334155"),
+          css.border("2px solid rgb(61, 61, 142)"),
           css.background_color("#0f172a"),
           css.color("#f8fafc"),
           css.font_size(length.px(16)),
@@ -672,15 +670,10 @@ fn notebook_editor_view(model: Model) {
             css.top(length.rem(0.8)),
             css.right(length.rem(0.8)),
             css.padding(length.rem(1.0)),
-            css.background(
-              "linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%)",
-            ),
+            css.background("rgb(26 26 46)"),
             css.border_radius(length.px(16)),
-            css.box_shadow(
-              "0 12px 40px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(220, 38, 127, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
-            ),
             css.backdrop_filter("blur(16px)"),
-            css.border("1px solid rgba(255, 255, 255, 0.08)"),
+            css.border("1px solid rgb(61, 61, 142)"),
             css.z_index(100),
           ]),
           [],
@@ -705,7 +698,7 @@ fn notebook_editor_view(model: Model) {
                     css.background(
                       "linear-gradient(135deg, rgba(220, 38, 127, 0.9), rgba(180, 28, 100, 0.9))",
                     ),
-                    css.border("1px solid rgba(255, 255, 255, 0.12)"),
+                    css.border("1px solid rgb(61, 61, 142)"),
                     css.color("#ffffff"),
                     css.border_radius(length.px(12)),
                     css.cursor("pointer"),
@@ -727,7 +720,7 @@ fn notebook_editor_view(model: Model) {
                       css.box_shadow(
                         "0 10px 30px rgba(220, 38, 127, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
                       ),
-                      css.border("1px solid rgba(255, 255, 255, 0.25)"),
+                      css.border("1px solid rgb(61, 61, 142)"),
                     ]),
                     css.active([
                       css.transform([transform.translate_y(length.px(-1))]),
@@ -748,7 +741,7 @@ fn notebook_editor_view(model: Model) {
                     css.padding_bottom(length.rem(0.75)),
                     css.min_height(length.rem(2.5)),
                     css.background("#1a1a2ef2"),
-                    css.border("1px solid rgba(255, 255, 255, 0.12)"),
+                    css.border("1px solid rgb(61, 61, 142)"),
                     css.color("#ffffff"),
                     css.border_radius(length.px(12)),
                     css.cursor("pointer"),
@@ -761,7 +754,7 @@ fn notebook_editor_view(model: Model) {
                         transform.translate_y(length.px(-3)),
                         transform.scale(1.02, 1.08),
                       ]),
-                      css.border("1px solid rgba(255, 255, 255, 0.25)"),
+                      css.border("1px solid rgb(61, 61, 142)"),
                     ]),
                     css.active([
                       css.transform([transform.translate_y(length.px(-1))]),
@@ -782,7 +775,7 @@ fn notebook_editor_view(model: Model) {
                     css.padding_bottom(length.rem(0.75)),
                     css.min_height(length.rem(2.5)),
                     css.background("#1a1a2ef2"),
-                    css.border("1px solid rgba(255, 255, 255, 0.12)"),
+                    css.border("1px solid rgb(61, 61, 142)"),
                     css.color("#ffffff"),
                     css.border_radius(length.px(12)),
                     css.cursor("pointer"),
@@ -795,7 +788,7 @@ fn notebook_editor_view(model: Model) {
                         transform.translate_y(length.px(-3)),
                         transform.scale(1.02, 1.08),
                       ]),
-                      css.border("1px solid rgba(255, 255, 255, 0.25)"),
+                      css.border("1px solid rgb(61, 61, 142)"),
                     ]),
                     css.active([
                       css.transform([transform.translate_y(length.px(-1))]),
@@ -820,7 +813,7 @@ fn notebook_editor_view(model: Model) {
                           css.top(length.px(y)),
                           css.position("absolute"),
                           css.background_color("rgb(3, 29, 40)"),
-                          css.border("1px solid #e1e5e9"),
+                          css.border("1px solid rgb(61, 61, 142)"),
                           css.border_radius(length.px(8)),
                           css.box_shadow("0 4px 12px rgba(0, 0, 0, 0.1)"),
                           css.padding(length.px(4)),
@@ -937,7 +930,7 @@ fn notebook_editor_view(model: Model) {
             css.background(
               "linear-gradient(135deg, rgba(220, 38, 127, 0.9), rgba(180, 28, 100, 0.9))",
             ),
-            css.border("2px solid rgba(255, 255, 255, 0.1)"),
+            css.border("2px solid rgb(61, 61, 142)"),
             css.color("#ffffff"),
             css.border_radius(length.px(10)),
             css.cursor("pointer"),
@@ -959,7 +952,7 @@ fn notebook_editor_view(model: Model) {
               css.box_shadow(
                 "0 8px 25px rgba(220, 38, 127, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
               ),
-              css.border("2px solid rgba(255, 255, 255, 0.2)"),
+              css.border("2px solid rgb(61, 61, 142)"),
             ]),
             css.active([css.transform([transform.translate_y(length.px(0))])]),
           ]),
@@ -995,7 +988,7 @@ fn notebooks_view(model: Model) {
           css.align_items("center"),
           css.margin_bottom(length.px(32)),
           css.padding_bottom(length.px(24)),
-          css.border_bottom("2px solid rgba(255, 255, 255, 0.1)"),
+          css.border("2px solid rgb(61, 61, 142)"),
         ]),
         [],
         [
@@ -1046,23 +1039,21 @@ fn notebooks_view(model: Model) {
         {
           use notebook <- list.map(notebooks)
           case notebook {
-            GithubNoteBook(name, owner, repo, branch, room, password) ->
+            NoteBook(name, _, _, publish_url: Some(_)) -> {
               card("#3b82f6", "#1e40af", [
                 card_header(name, cloud_svg),
-                info_section(
-                  owner <> "/" <> repo,
-                  "Branch: " <> branch,
-                  "#3b82f6",
-                ),
+                info_section(notebook),
                 action_buttons(notebook),
               ])
+            }
 
-            LocalNoteBook(name, room, password) ->
+            NoteBook(name, _, _, publish_url: None) -> {
               card("#10b981", "#047857", [
                 card_header(name, folder_svg),
-                info_section("Local Storage", "ID: " <> room, "#10b981"),
+                info_section(notebook),
                 action_buttons(notebook),
               ])
+            }
           }
         },
       ),
@@ -1108,7 +1099,7 @@ fn card(
       css.padding(length.px(24)),
       css.border_radius(length.px(16)),
       css.background("linear-gradient(135deg, #1e293b 0%, #334155 100%)"),
-      css.border("2px solid rgba(255, 255, 255, 0.1)"),
+      css.border("2px solid rgb(61, 61, 142)"),
       css.box_shadow("0 8px 32px rgba(0, 0, 0, 0.3)"),
       css.transition("all 0.3s ease"),
       css.position("relative"),
@@ -1204,18 +1195,14 @@ fn card_header(name: String, icon) -> Element(b) {
   )
 }
 
-fn info_section(
-  title: String,
-  subtitle: String,
-  accent_color: String,
-) -> Element(f) {
+fn info_section(notebook: NoteBook) -> Element(f) {
   html.div(
     class([
       css.margin_bottom(length.px(20)),
       css.padding(length.px(16)),
       css.background_color("rgba(0, 0, 0, 0.2)"),
       css.border_radius(length.px(12)),
-      css.border("1px solid rgba(255, 255, 255, 0.1)"),
+      css.border("1px solid rgb(61, 61, 142)"),
     ]),
     [],
     [
@@ -1227,7 +1214,7 @@ fn info_section(
           css.margin_bottom(length.px(4)),
         ]),
         [],
-        [html.text(title)],
+        [html.text(notebook.name)],
       ),
       html.div(
         class([
@@ -1236,7 +1223,28 @@ fn info_section(
           css.font_family("monospace"),
         ]),
         [],
-        [html.text(subtitle)],
+        [
+          case notebook {
+            NoteBook(name:, room:, password:, publish_url: Some(_)) -> {
+              [
+                html.text("room id:" <> room),
+                html.br(class([]), []),
+                html.text("room password:" <> password),
+                html.br(class([]), []),
+                html.text("publish url:" <> password),
+              ]
+              |> element.fragment
+            }
+            NoteBook(name:, room:, password:, publish_url: None) -> {
+              [
+                html.text("room id:" <> room),
+                html.br(class([]), []),
+                html.text("room password:" <> password),
+              ]
+              |> element.fragment
+            }
+          },
+        ],
       ),
     ],
   )
@@ -1900,6 +1908,7 @@ fn do_save_document() -> Nil
 
 fn save_document() {
   use _ <- effect.from
+
   do_save_document()
 }
 
@@ -1946,15 +1955,12 @@ fn error_toast(content) {
 }
 
 type NoteBook {
-  GithubNoteBook(
+  NoteBook(
     name: String,
     room: String,
     password: String,
-    owner: String,
-    repo: String,
-    branch: String,
+    publish_url: Option(String),
   )
-  LocalNoteBook(name: String, room: String, password: String)
 }
 
 pub type TreeItemType {
