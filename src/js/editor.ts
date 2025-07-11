@@ -192,7 +192,11 @@ export async function init_tiptap(doc: LoroDoc) {
     save_function(room_id, doc);
   });
   let render_editor = () => {
-    let container = doc.getMap(selected_document!);
+    let tree = doc.getTree("tree");
+    let tree_doc = tree
+      .getNodeByID(selected_document as TreeID)!
+      .data.getOrCreateContainer("content", new LoroMap());
+
     const LoroPlugins = Extension.create({
       name: "loro-plugins",
       addProseMirrorPlugins() {
@@ -200,7 +204,7 @@ export async function init_tiptap(doc: LoroDoc) {
           LoroSyncPlugin({
             //@ts-ignore
             doc,
-            containerId: container.id,
+            containerId: tree_doc.id,
           }),
           LoroUndoPlugin({ doc }),
           LoroCursorPlugin(awareness, {
